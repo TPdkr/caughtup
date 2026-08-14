@@ -192,7 +192,7 @@ def reset_all(profile):
 @click.pass_obj
 def get_tags(profile):
     tags = profile.get_tags()
-    click.echo(f"TAGS: {tags}")
+    click.echo(click.style(f"TAGS={tags}", fg="yellow"))
 
 """
 SERIES DATA FOR 1 SERIES
