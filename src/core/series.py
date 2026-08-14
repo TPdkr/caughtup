@@ -30,6 +30,12 @@ class Series:
 		if self.stopped_at == None:
 			self.stopped_at = [0,0]
 
+		#edge case in case some data is missing for comparison
+		if self.stopped_at[1]==None or self.stopped_at[1]=="null":
+			self.stopped_at[1]=0
+		if self.num_episodes==None or self.num_episodes=="null":
+			self.num_episodes = 0
+		
 		#status check
 		if self.stopped_at == [0,0]:
 			self.status = Status.HAVENT_STARTED
@@ -72,7 +78,10 @@ class Series:
 		'''
 		set the point of stop to be latest episode
 		'''
-		self.stopped_at = [self.num_seasons, self.num_episodes]
+		if self.num_episodes !=None:
+			self.stopped_at = [self.num_seasons, self.num_episodes]
+		else:
+			self.stopped_at = [self.num_seasons, 0]
 		self.status = Status.CAUGHT_UP
 
 	def add_tag(self, tag):

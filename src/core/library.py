@@ -70,7 +70,7 @@ class Library:
 		'''
 		check_id= len(id_list)!=0
 		for serie in self.series:
-			if (check_id and serie.id in id_list) or not check_id:
+			if not check_id or (check_id and serie.id in id_list):
 				serie.check_for_updates()
 
 	def all_caught_up_all(self,id_list=[]):
@@ -103,6 +103,7 @@ class Library:
 		add a series
 		'''
 		self.series.append(serie)
+		serie.check_for_updates()
 
 	def remove_series(self, serie_id):
 		'''

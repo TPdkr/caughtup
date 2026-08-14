@@ -18,7 +18,7 @@ def load_profile():
         if click.confirm("Create a new profile?", default=False):
             #create a new profile and set its path
             path = click.prompt("Enter path where to create profile: ")
-            path = "../storage/"+path
+            path = "../storage/"+path+".json"
             lib = Library()
             lib.set_path(path)
             print("user profile created")
@@ -27,7 +27,7 @@ def load_profile():
             try:
                 #a correct path should be entered
                 path = click.prompt("Enter path to your series library file: ")
-                path = "../storage/"+path
+                path = "../storage/"+path+".json"
                 lib = Library(path=path)
                 print("user profile loaded")
                 return lib
@@ -50,7 +50,7 @@ Here all key commands can be entered by the user.
 def user_loop(profile):
     while True:
         choice = click.prompt(
-            "\n[list] [add] [set-profile] [set-path] [get-tags] [caught-up-all] [reset-all] [exit]",
+            "\n[list] [add] [update-all] [clear-updated]\n[get-tags] [caught-up-all] [reset-all]\n[set-profile] [set-path] [exit]\nAction: ",
             default="",
             show_default=False,
         )
@@ -105,7 +105,8 @@ def add_series(profile):
     matches = [Series(el) for el in matches]
 
     for i, match in enumerate(matches):
-        click.echo(f"{i} {match.name} {match.premiered};")
+        click.echo(click.style(f"{i} ", fg="green"), nl=False)
+        click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"), nl=False)
 
     index = click.prompt("Enter desired index: ")
     if index.isdigit():
@@ -125,6 +126,19 @@ def set_path(profile):
     path = "../storage/"+path
     profile.set_path(path) 
     print("Saving path changed")
+
+@cli.command("update-all")
+@click.pass_obj
+def update_all(profile):
+    print("Fetching data for updates")
+    profile.check_for_updates_all()
+    print("Updates completed")
+
+@cli.command("clear-updated")
+@click.pass_obj
+def update_all(profile):
+    print("Removing updated status")
+    profile.clear_updated()
 
 @cli.command("caught-up-all")
 @click.pass_obj
@@ -190,7 +204,8 @@ def series_menu(profile, serie):
         else:
             click.echo("Unrecognized action")
 
-
-
+"""
+MAIN FUNCTION
+"""
 if __name__ == "__main__":
     main()
