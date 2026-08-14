@@ -96,6 +96,7 @@ def list_series(profile):
     keyword = click.prompt("(ENTER to skip) Key word to search for ", default="")
     #find the matches list
     matches = profile.get_with(keyword, tag, updated)
+    matches = sorted(matches, key=lambda m: m.premiered, reverse=True)
 
     #check for matches being empty
     if not matches:
