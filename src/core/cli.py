@@ -6,6 +6,15 @@ from series import Series, Status
 from library import Library
 from api import Api
 
+def mask_path(path):
+    '''
+    Mask the path/profile name to make it easier for the user
+
+    Args:
+        path: string name of the profile
+    '''
+    return "../storage/"+path+".json"
+
 def load_profile():
     """
     Load profile or create a new one. 
@@ -18,7 +27,7 @@ def load_profile():
         if click.confirm("Create a new profile?", default=False):
             #create a new profile and set its path
             path = click.prompt("Enter path where to create profile: ")
-            path = "../storage/"+path+".json"
+            path = mask_path(path)
             lib = Library()
             lib.set_path(path)
             print("user profile created")
@@ -27,7 +36,7 @@ def load_profile():
             try:
                 #a correct path should be entered
                 path = click.prompt("Enter path to your series library file: ")
-                path = "../storage/"+path+".json"
+                path = mask_path(path)
                 lib = Library(path=path)
                 print("user profile loaded")
                 return lib
@@ -62,6 +71,7 @@ def user_loop(profile):
         if args[0] == "exit":
             break
 
+        #we try to execute the command, but also catch exceptions
         try:
             cli.main(args=args, obj=profile, standalone_mode=False)
         except click.ClickException as e:
@@ -74,18 +84,28 @@ def user_loop(profile):
 
 @cli.command("list")
 @click.option("--tag", default=None)
-@click.option("--updated", is_flag=False)
+@click.option("--updated", is_flag=True)
 @click.option("--keyword", default="")
 @click.pass_obj
 def list_series(profile, tag, updated, keyword):
-    print(f"listing series with tag:{tag} updated:*{updated}* key_word:*{keyword}*")
+    '''
+    list series in the library with the specific parameters
+
+    Args:
+        profile: user data
+        tag: tag to search for
+        updated: search for updated tag
+        keyword: name should include this keyword
+    '''
+    #find the matches list
     matches = profile.get_with(keyword, tag, updated)
-    print(matches)
+    #print the results out
     for i,match in enumerate(matches):
         click.echo(click.style(f"{i} ", fg="green"), nl=False)
         click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"), nl=False)
         click.echo(f"s: {match.num_seasons} ep: {match.num_episodes} - at {match.stopped_at}")
 
+    #prompt user for next action
     choice = click.prompt(f"ACTIONS [idx] [back]")
     choice = choice.split()
     if len(choice)==1 and choice[0].isdigit():
@@ -98,18 +118,25 @@ def list_series(profile, tag, updated, keyword):
 @cli.command("add")
 @click.pass_obj
 def add_series(profile):
+    '''
+    This function adds a series by searching for it and
+    making a choice between results
+
+    Args:
+        profile: user data
+    '''
     #user needs to enter the search query here
     query = click.prompt("Enter the search query: ")
     matches = Api.search(query)
 
     matches = [Series(el) for el in matches]
-
+    #display the matches
     for i, match in enumerate(matches):
         click.echo(click.style(f"{i} ", fg="green"), nl=False)
-        click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"), nl=False)
-
-    index = click.prompt("Enter desired index: ")
-    if index.isdigit():
+        click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"))
+    #choice of index to add
+    index = click.prompt("Enter desired index: ",type=click.IntRange(0, len(matches) - 1))
+    if index.isdigit() and 0 <= index < len(matches):
         profile.add_series(matches[int(index)])
     else: 
         click.echo("Invalid input")
@@ -123,7 +150,7 @@ def set_profile(profile):
 @click.pass_obj
 def set_path(profile):
     path = click.prompt("Enter new path (name.json): ")
-    path = "../storage/"+path
+    path = mask_path(path)
     profile.set_path(path) 
     print("Saving path changed")
 
@@ -136,7 +163,7 @@ def update_all(profile):
 
 @cli.command("clear-updated")
 @click.pass_obj
-def update_all(profile):
+def clear_updated(profile):
     print("Removing updated status")
     profile.clear_updated()
 
@@ -149,8 +176,14 @@ def caught_up_all(profile):
 @cli.command("reset-all")
 @click.pass_obj
 def reset_all(profile):
-    print("resetting watch progress")
+    print("Resetting watch progress")
     profile.reset_all()
+
+@cli.command("get-tags")
+@click.pass_obj
+def reset_all(profile):
+    tags = profile.get_tags()
+    click.echo(f"TAGS: {tags}")
 
 """
 SERIES DATA FOR 1 SERIES
@@ -168,12 +201,20 @@ def series_menu(profile, serie):
     - set all caught up
     """
     while True:
+        #status label is retrieved as a string
+        status_label = {
+            Status.CAUGHT_UP: "CAUGHTUP",
+            Status.IN_PROGRESS: "WATCHING",
+        }.get(serie.status, "NOT STARTED")
+
+        #show the series data
         click.echo(click.style(f"\n{serie.name.upper()} ({serie.premiered});\n", bg="blue", fg="white"))
         click.echo(
             f"(s: {serie.num_seasons} ep: {serie.num_episodes}) : stopped at ({serie.stopped_at[0]}, {serie.stopped_at[1]})\n"
             f"TAGS: {', '.join(serie.tags)}\n"
-            f"STATUS: {"CAUGHTUP" if serie.status == Status.CAUGHT_UP else "WATCHING" if serie.status == Status.IN_PROGRESS else "NOT STARTED"}\n"
+            f"STATUS: {status_label}\n"
         )
+        #the options available to the user
         choice = click.prompt(
             "[remove] [add-tag <tag>] [remove-tag <tag>] [set-stopped-at <s> <ep>] [back]",
             default="back", show_default=False,
@@ -183,7 +224,7 @@ def series_menu(profile, serie):
             return
 
         action, *rest = choice
-
+        #checking which action was chosen
         if action == "remove":
             profile.remove_series(serie.id)
             click.echo(f"Removed {serie.name}")
