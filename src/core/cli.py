@@ -103,10 +103,12 @@ def list_series(profile):
         return
     
     #print the results out
+    click.echo(click.style(f"{"i":>2}|{"name":<34}|premiered    | {"progress":<26}| TAGS", fg="green"))
     for i,match in enumerate(matches):
-        click.echo(click.style(f"{i} ", fg="green"), nl=False)
-        click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"), nl=False)
-        click.echo(f"s: {match.num_seasons} ep: {match.num_episodes} - at {match.stopped_at}")
+        click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
+        click.echo(click.style(f"{match.name:<35} {match.premiered:<12}| ", fg="blue"), nl=False)
+        click.echo(f"s:{match.num_seasons:>2} ep:{match.num_episodes:>3} - at {str(match.stopped_at):>8} | ", nl=False)
+        click.echo(click.style(f"{match.tags}", fg="yellow"))
 
     #prompt user for next action
     choice = click.prompt(f"ACTIONS [idx] [back]")
@@ -139,8 +141,8 @@ def add_series(profile):
     matches = [Series(el) for el in matches]
     #display the matches
     for i, match in enumerate(matches):
-        click.echo(click.style(f"{i} ", fg="green"), nl=False)
-        click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"))
+        click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
+        click.echo(click.style(f"{match.name:<25} {match.premiered:<12}; ", fg="blue"))
     #choice of index to add
     index = click.prompt("Enter desired index: ",type=click.IntRange(0, len(matches) - 1))
     profile.add_series(matches[index])
@@ -218,11 +220,10 @@ def series_menu(profile, serie):
         }
         label, color = STATUS_STYLE.get(serie.status, ("NOT STARTED", "red"))
         #show the series data
-        click.echo(click.style(f"\n{serie.name.upper()} ({serie.premiered});\n", bg="blue", fg="white"))
-        click.echo(
-            f"(s: {serie.num_seasons} ep: {serie.num_episodes}) : stopped at ({serie.stopped_at[0]}, {serie.stopped_at[1]})\n"
-            f"TAGS: {', '.join(serie.tags)}\n"
-        )
+        click.echo(click.style(f"\n{serie.name.upper()}", bg="blue", fg="white"))
+        click.echo(click.style(f"premiered: {serie.premiered}\nended: {serie.ended}",fg="blue"))
+        click.echo(f"s:{serie.num_seasons} ep:{serie.num_episodes} - at ({serie.stopped_at[0]}, {serie.stopped_at[1]})")
+        click.echo(click.style(f"TAGS={serie.tags}", fg="yellow"))
         click.echo("STATUS: " + click.style(label, fg=color, bold=True))
 
         #ASK FOR ACTION
@@ -240,6 +241,8 @@ def series_menu(profile, serie):
             else:
                 print("Cancelled")
             return  # object no longer exists, so leave the loop
+
+        #tag actions
         elif action == "add-tag":
             tag = click.prompt("Enter tag name")
             serie.add_tag(tag)
@@ -248,6 +251,8 @@ def series_menu(profile, serie):
             tag = click.prompt("Enter tag name")
             serie.remove_tag(tag)
             click.echo(f"Removed tag {tag}")
+
+        # user progress changes
         elif action == "set-stopped-at":
             s = click.prompt("Season",type=click.IntRange(0, serie.num_seasons))
             ep = click.prompt("Episode", type=click.IntRange(0,100))
@@ -257,6 +262,7 @@ def series_menu(profile, serie):
             serie.all_caught_up()
         elif action == "reset":
             serie.reset()
+        #oopsieees
         else:
             click.echo("Unrecognized action")
 
