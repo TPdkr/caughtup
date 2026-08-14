@@ -85,9 +85,6 @@ def list_series(profile):
 
     Args:
         profile: user data
-        tag: tag to search for
-        updated: search for updated tag
-        keyword: name should include this keyword
     '''
     click.echo("")
     tag = click.prompt("(ENTER to skip) Tags to include", default="")
