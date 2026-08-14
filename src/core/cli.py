@@ -57,23 +57,18 @@ MAIN LOOP
 Here all key commands can be entered by the user.
 """
 def user_loop(profile):
+    ACTIONS = ["list", "add", "update-all", "clear-updated", "get-tags",
+               "caught-up-all", "reset-all", "set-profile", "set-path", "exit"]
+    
     while True:
-        choice = click.prompt(
-            "\n[list] [add] [update-all] [clear-updated]\n[get-tags] [caught-up-all] [reset-all]\n[set-profile] [set-path] [exit]\nAction: ",
-            default="",
-            show_default=False,
-        )
+        choice = click.prompt("\nACTION", type=click.Choice(ACTIONS, case_sensitive=False))
         #read arguments entered by user
-        args = choice.split()
-        #check that 1. non empty 2. not exit condition
-        if not args:
-            continue
-        if args[0] == "exit":
+        if choice == "exit":
             break
 
         #we try to execute the command, but also catch exceptions
         try:
-            cli.main(args=args, obj=profile, standalone_mode=False)
+            cli.main(args=[choice], obj=profile, standalone_mode=False)
         except click.ClickException as e:
             e.show()
         except click.exceptions.Exit:
@@ -83,11 +78,8 @@ def user_loop(profile):
     click.echo(f"Changes saved into {profile.path}.")
 
 @cli.command("list")
-@click.option("--tag", default=None)
-@click.option("--updated", is_flag=True)
-@click.option("--keyword", default="")
 @click.pass_obj
-def list_series(profile, tag, updated, keyword):
+def list_series(profile):
     '''
     list series in the library with the specific parameters
 
@@ -97,8 +89,19 @@ def list_series(profile, tag, updated, keyword):
         updated: search for updated tag
         keyword: name should include this keyword
     '''
+    click.echo("")
+    tag = click.prompt("(ENTER to skip) Tags to include", default="")
+    tag = tag or None
+    updated = click.confirm("(ENTER to skip) List only updated series", default=False,show_default=True)
+    keyword = click.prompt("(ENTER to skip) Key word to search for ", default="")
     #find the matches list
     matches = profile.get_with(keyword, tag, updated)
+
+    #check for matches being empty
+    if not matches:
+        click.echo("No series found.")
+        return
+    
     #print the results out
     for i,match in enumerate(matches):
         click.echo(click.style(f"{i} ", fg="green"), nl=False)
@@ -129,6 +132,10 @@ def add_series(profile):
     query = click.prompt("Enter the search query: ")
     matches = Api.search(query)
 
+    if not matches:
+        click.echo("No series found.")
+        return
+
     matches = [Series(el) for el in matches]
     #display the matches
     for i, match in enumerate(matches):
@@ -136,10 +143,7 @@ def add_series(profile):
         click.echo(click.style(f"{match.name} {match.premiered}; ", fg="blue"))
     #choice of index to add
     index = click.prompt("Enter desired index: ",type=click.IntRange(0, len(matches) - 1))
-    if index.isdigit() and 0 <= index < len(matches):
-        profile.add_series(matches[int(index)])
-    else: 
-        click.echo("Invalid input")
+    profile.add_series(matches[index])
 
 @cli.command("set-profile")
 @click.pass_obj
@@ -176,12 +180,15 @@ def caught_up_all(profile):
 @cli.command("reset-all")
 @click.pass_obj
 def reset_all(profile):
-    print("Resetting watch progress")
-    profile.reset_all()
+    if click.confirm("This will reset watch progress for ALL series. Continue?"):
+        profile.reset_all()
+        click.echo("Done.")
+    else:
+        click.echo("Cancelled.")
 
 @cli.command("get-tags")
 @click.pass_obj
-def reset_all(profile):
+def get_tags(profile):
     tags = profile.get_tags()
     click.echo(f"TAGS: {tags}")
 
@@ -200,44 +207,52 @@ def series_menu(profile, serie):
     - set stopped at
     - set all caught up
     """
-    while True:
-        #status label is retrieved as a string
-        status_label = {
-            Status.CAUGHT_UP: "CAUGHTUP",
-            Status.IN_PROGRESS: "WATCHING",
-        }.get(serie.status, "NOT STARTED")
+    ACTIONS = ["back","add-tag", "remove-tag", "set-stopped-at","caught-up","remove","reset"]
 
+    while True:
+        #PRINT SERIES
+        #status label is retrieved as a string
+        STATUS_STYLE = {
+            Status.CAUGHT_UP: ("CAUGHT UP", "green"),
+            Status.IN_PROGRESS: ("WATCHING", "yellow"),
+        }
+        label, color = STATUS_STYLE.get(serie.status, ("NOT STARTED", "red"))
         #show the series data
         click.echo(click.style(f"\n{serie.name.upper()} ({serie.premiered});\n", bg="blue", fg="white"))
         click.echo(
             f"(s: {serie.num_seasons} ep: {serie.num_episodes}) : stopped at ({serie.stopped_at[0]}, {serie.stopped_at[1]})\n"
             f"TAGS: {', '.join(serie.tags)}\n"
-            f"STATUS: {status_label}\n"
         )
-        #the options available to the user
-        choice = click.prompt(
-            "[remove] [add-tag <tag>] [remove-tag <tag>] [set-stopped-at <s> <ep>] [back]",
-            default="back", show_default=False,
-        ).split()
+        click.echo("STATUS: " + click.style(label, fg=color, bold=True))
 
-        if not choice or choice[0] == "back":
+        #ASK FOR ACTION
+        #the options available to the user
+        action= click.prompt("\nACTION:", type=click.Choice(ACTIONS, case_sensitive=False), default="back")
+
+        if action == "back":
             return
 
-        action, *rest = choice
         #checking which action was chosen
         if action == "remove":
-            profile.remove_series(serie.id)
-            click.echo(f"Removed {serie.name}")
+            if click.confirm("Are you sure you want to delete the info?"):
+                profile.remove_series(serie.id)
+                click.echo(f"Removed {serie.name}")
+            else:
+                print("Cancelled")
             return  # object no longer exists, so leave the loop
-        elif action == "add-tag" and rest:
-            serie.add_tag(rest[0])
-            click.echo(f"Tagged {serie.name} with {rest[0]}")
-        elif action == "remove-tag" and rest:
-            serie.remove_tag(rest[0])
-            click.echo(f"Removed tag {rest[0]}")
-        elif action == "set-stopped-at" and rest:
-            serie.set_stoppped_at([rest[0], rest[1]])
-            click.echo(f"Updated stopped_at to {rest[0]} {rest[1]}")
+        elif action == "add-tag":
+            tag = click.prompt("Enter tag name")
+            serie.add_tag(tag)
+            click.echo(f"Tagged {serie.name} with {tag}")
+        elif action == "remove-tag":
+            tag = click.prompt("Enter tag name")
+            serie.remove_tag(tag)
+            click.echo(f"Removed tag {tag}")
+        elif action == "set-stopped-at":
+            s = click.prompt("Season",type=click.IntRange(0, serie.num_seasons))
+            ep = click.prompt("Episode", type=click.IntRange(0,100))
+            serie.set_stopped_at([s, ep])
+            click.echo(f"Updated stopped_at to {s} {ep}")
         elif action == "caught-up":
             serie.all_caught_up()
         elif action == "reset":
