@@ -26,7 +26,7 @@ def load_profile():
     while True:
         if click.confirm("Create a new profile?", default=False):
             #create a new profile and set its path
-            path = click.prompt("Enter path where to create profile: ")
+            path = click.prompt("Enter new profile name")
             path = mask_path(path)
             lib = Library()
             lib.set_path(path)
@@ -35,7 +35,7 @@ def load_profile():
         else:
             try:
                 #a correct path should be entered
-                path = click.prompt("Enter path to your series library file: ")
+                path = click.prompt("Enter profile name")
                 path = mask_path(path)
                 lib = Library(path=path)
                 print("user profile loaded")
@@ -109,14 +109,10 @@ def list_series(profile):
         click.echo(click.style(f"{match.tags}", fg="yellow"))
 
     #prompt user for next action
-    choice = click.prompt(f"ACTIONS [idx] [back]")
-    choice = choice.split()
-    if len(choice)==1 and choice[0].isdigit():
-        idx = int(choice[0])
-        if 0 <= idx < len(matches):
-            series_menu(profile, matches[idx])
-        else:
-            click.echo("Invalid index")
+    index = click.prompt("[ENTER/-1 for none] Enter desired index",type=click.IntRange(-1, len(matches) - 1), default=-1)
+    if index==-1:
+            return
+    series_menu(profile, matches[index])
 
 @cli.command("add")
 @click.pass_obj
@@ -142,7 +138,9 @@ def add_series(profile):
         click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
         click.echo(click.style(f"{match.name:<25} {match.premiered:<12}; ", fg="blue"))
     #choice of index to add
-    index = click.prompt("Enter desired index: ",type=click.IntRange(0, len(matches) - 1))
+    index = click.prompt("[ENTER/-1 for none] Enter desired index",type=click.IntRange(-1, len(matches) - 1), default=-1)
+    if index==-1:
+        return
     profile.add_series(matches[index])
 
 @cli.command("set-profile")
