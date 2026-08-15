@@ -131,8 +131,6 @@ class Series:
 			print(f"Registered updates for the show {self.name}")
 			self.add_tag("updated")
 
-		
-
 	def to_dict(self):
 		store = dict()
 		for key in self.keys:

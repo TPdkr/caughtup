@@ -40,7 +40,22 @@ There should be several components:
 
 ## Classes
 
+There are 3 key classes in this project all present in the core folder in corresponding files:
+- **Api**: api requests hidden by methods
+- **Series**: a single series a user watched
+- **Library**: storage of many series
+
+1 more class is the **STATUS** enum class that is used by the **Series** class.
+
+The class methods more directly can be seen in this diagram.
+
+![classes diagram](./classes.png)
+
 ## Storage
+
+The storage takes form of a json file that is placed into the storage folder. It is quite simple and allows to copy, edit the profile and whatever else a user can do with a simple file.
+
+Also, it means that no database needs to be deployed.
 
 ## API
 
@@ -51,5 +66,3 @@ There should be several components:
 At first it should check the config file for the library file path to use. If nothing is specified the user should be prompted to enter it or to create a new file.
 
 Then main screen should be shown with library methods represented as buttons to use alongside of course the ability to see the full list or tags.
-
-One of the buttons should be "help" and it should explain what and why essentially.
