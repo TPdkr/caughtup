@@ -50,6 +50,41 @@ The user journeuy the user takes can be seen below. It has several key stages:
 
 ![caught_ap app journey](./activity_diagram.png)
 
+These are the commands available to the user on the main screen after setting a profile:
+
+|command|description|
+|---|---|
+|exit| stop and save progress|
+|list| list series that match the query|
+| add| add a new series to the profile|
+| update-all| refresh data on all series and notify when new season, episode is noted|
+| clear-updated| remove the updated status from all series if present|
+| get-tags| get all tags that are used|
+| caught-up-all| set the stopped at to the latest episode for all series|
+| reset-all| reset watch progress in each series to the very start|
+| set-profile| set the current profile as default|
+| set-path| set a new path for current profile|
+
+If a ***list*** command is chosen the user can choose:
+- tag to search for
+- if the query should show updated series
+- keyword that should be present in the name
+
+Then one of the series can be chosen vie indexing. In series menu that opens from there all key info is shown. Moreover, another set of actions is 
+available to the user.
+
+|command|description|
+|---|---|
+|back| go back to main screen|
+|add-tag| add a tag to the series|
+| remove-tag| remove a tag from the series|
+| set-stopped-at| set the progress to a certain point|
+| caught-up | set the progress to the latest episode|
+| check-for-updates| refresh series data to search for new info|
+| remove| removed the series from the profile|
+| reset| reset the watch progress to the start| 
+
+
 ## Classes
 
 There are 3 key classes in this project all present in the core folder in corresponding files:
