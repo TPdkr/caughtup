@@ -101,10 +101,10 @@ def list_series(profile):
         return
     
     #print the results out
-    click.echo(click.style(f"{"i":>2}|{"name":<34}|premiered    | {"progress":<26}| TAGS", fg="green"))
+    click.echo(click.style(f"{"i":>2}|{"name":<39}|premiered    | {"progress":<26}| TAGS", fg="green"))
     for i,match in enumerate(matches):
         click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
-        click.echo(click.style(f"{match.name:<35} {match.premiered:<12}| ", fg="blue"), nl=False)
+        click.echo(click.style(f"{match.name:<40} {match.premiered:<12}| ", fg="blue"), nl=False)
         click.echo(f"s:{match.num_seasons:>2} ep:{match.num_episodes:>3} - at {str(match.stopped_at):>8} | ", nl=False)
         click.echo(click.style(f"{match.tags}", fg="yellow"))
 
