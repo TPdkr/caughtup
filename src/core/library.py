@@ -131,7 +131,7 @@ class Library:
 		"""
 		matches = []
 		for serie in self.series:
-			matches_keyword = key_word == "" or key_word in serie.name
+			matches_keyword = key_word == "" or key_word.upper() in serie.name.upper()
 			matches_tag = tag is None or tag in serie.tags
 			matches_updated = updated is False or updated is None or "updated" in serie.tags
 			matches_status = status_id==-1 or serie.status.value == status_id
