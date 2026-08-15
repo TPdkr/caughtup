@@ -224,6 +224,8 @@ def series_menu(profile, serie):
         click.echo(click.style(f"TAGS={serie.tags}", fg="yellow"))
         click.echo("STATUS: " + click.style(label, fg=color, bold=True))
 
+        click.echo(f"DESCRIPTION: {serie.descr.replace("<p>","").replace("</p>","")}\n")
+
         #ASK FOR ACTION
         #the options available to the user
         action= click.prompt("\nACTION:", type=click.Choice(ACTIONS, case_sensitive=False), default="back")
