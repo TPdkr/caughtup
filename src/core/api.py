@@ -14,6 +14,15 @@ class Api:
 		if response_seasons!=None:
 			store["num_seasons"]=len(response_seasons)
 			store["num_episodes"]=response_seasons[-1]["episodeOrder"]
+
+		#default search tags
+		if "Anime" in response["genres"]:
+			store["tags"]=["anime"]
+		elif response["type"]=="Animation":
+			store["tags"]=["cartoon"]
+		else:
+			store["tags"]=["live-action"]
+
 		return store
 
 	
