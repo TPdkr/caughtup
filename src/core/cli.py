@@ -205,7 +205,7 @@ def series_menu(profile, serie):
     - set stopped at
     - set all caught up
     """
-    ACTIONS = ["back","add-tag", "remove-tag", "set-stopped-at","caught-up","remove","reset"]
+    ACTIONS = ["back","add-tag", "remove-tag", "set-stopped-at","caught-up","check-for-updates","remove","reset"]
 
     while True:
         #PRINT SERIES
@@ -260,6 +260,10 @@ def series_menu(profile, serie):
             serie.all_caught_up()
         elif action == "reset":
             serie.reset()
+
+        #check updates
+        elif action == "check-for-updates":
+            serie.check_for_updates()
         #oopsieees
         else:
             click.echo("Unrecognized action")
