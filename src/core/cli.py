@@ -1,10 +1,32 @@
 import click
 import sys
+import json
 
 # import custom classes
 from series import Series, Status
 from library import Library
 from api import Api
+
+def load_default_profile():
+    '''
+    Load the path to the default profile specified in the .config file
+    '''
+    try:
+        with open("../storage/.config") as f:
+            data = json.load(f)
+        return data.get("path")
+    except FileNotFoundError:
+        return ""
+    except (json.JSONDecodeError, KeyError):
+        return ""
+
+def set_default_profile(path):
+    '''
+    Set the default profile as path
+    '''
+    data = {"path":path}
+    with open("../storage/.config", "w") as f:
+        json.dump(data, f)
 
 def mask_path(path):
     '''
@@ -14,6 +36,13 @@ def mask_path(path):
         path: string name of the profile
     '''
     return "../storage/"+path+".json"
+
+def unmask_path(path):
+    '''
+    Unmask the path and make it the profile name
+    '''
+    unmasked_path = path[11:].replace(".json","")
+    return unmasked_path
 
 def load_profile():
     """
@@ -34,8 +63,15 @@ def load_profile():
             return lib
         else:
             try:
-                #a correct path should be entered
-                path = click.prompt("Enter profile name")
+                #default profile load
+                default_path = load_default_profile()
+                path = None
+                if default_path == "":
+                    #a correct path should be entered
+                    path = click.prompt("Enter profile name")
+                else:
+                    #a correct path should be entered with defualt option available
+                    path = click.prompt("(ENTER for default) Enter profile name", default=default_path)
                 path = mask_path(path)
                 lib = Library(path=path)
                 print("user profile loaded")
@@ -146,7 +182,10 @@ def add_series(profile):
 @cli.command("set-profile")
 @click.pass_obj
 def set_profile(profile):
-    print("setting default  profile")
+    path=unmask_path(profile.path)
+    print(f"New defualt profile is {path}")
+    set_default_profile(path)
+    print("Successfully set default  profile as current one")
 
 @cli.command("set-path")
 @click.pass_obj
