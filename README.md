@@ -55,3 +55,7 @@ This is the repo structure:
 
 #### API
 Since this project doesn't have its own tv databse an open API was used. Namely [tv maze api](https://www.tvmaze.com/api)
+
+#### UML
+
+The UML diagrams were used in this project. The way I made them is the **graphore** Linux app that is free and easily available. 
