@@ -142,7 +142,7 @@ def list_series(profile):
         click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
         click.echo(click.style(f"{match.name:<40} {match.premiered:<12}| ", fg="blue"), nl=False)
         #[S:0 EP:12] / [1:24]
-        click.echo(f"[{match.num_seasons:>2}:{match.num_episodes:>2}]-[{str(match.stopped_at[0]):>2}:{str(match.stopped_at[1]):>2}]|", nl=False)
+        click.echo(f"[{str(match.stopped_at[0]):>2}:{str(match.stopped_at[1]):>2}]-[{match.num_seasons:>2}:{match.num_episodes:>2}]|", nl=False)
         #status label is retrieved as a string
         STATUS_STYLE = {
             Status.CAUGHT_UP: ("CAUGHT UP", "green"),
