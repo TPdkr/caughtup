@@ -127,7 +127,7 @@ class Series:
 		self.check_status()
 
 		#check for updates
-		if num_seasons_old<self.num_seasons or num_episodes_old<self.num_episodes:
+		if num_seasons_old!=self.num_seasons or num_episodes_old!=self.num_episodes:
 			print(f"Registered updates for the show {self.name}")
 			self.add_tag("updated")
 

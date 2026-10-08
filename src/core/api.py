@@ -11,9 +11,13 @@ class Api:
 		store["premiered"] = response["premiered"] if ("premiered" in response and response["premiered"]!= None) else ""
 		store["ended"] = response["ended"] if ("ended" in response and response["ended"] != None) else ""
 		#next the data about seasons is to be checked
-		if response_seasons!=None:
-			store["num_seasons"]=len(response_seasons)
-			store["num_episodes"]=response_seasons[-1]["episodeOrder"]
+		if response_seasons!=None and len(response_seasons)>0:
+			last_ep = response_seasons[-1]
+			store["num_seasons"]=last_ep["season"] if ("season" in last_ep) else 0
+			store["num_episodes"]=last_ep["number"] if ("number" in last_ep) else 0
+		else:
+			store["num_seasons"]=0
+			store["num_episodes"]=0
 
 		#default search tags
 		if "Anime" in response["genres"]:
@@ -44,7 +48,7 @@ class Api:
 	def get_data(id):
 		# urls are formatted for the get requests
 		url = f"https://api.tvmaze.com/shows/{id}"
-		url_seasons = f"https://api.tvmaze.com/shows/{id}/seasons"
+		url_seasons = f"https://api.tvmaze.com/shows/{id}/episodes"
 
 		response = requests.get(url)
 		response_seasons = requests.get(url_seasons)
