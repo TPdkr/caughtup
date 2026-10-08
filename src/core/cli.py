@@ -137,12 +137,21 @@ def list_series(profile):
         return
     
     #print the results out
-    click.echo(click.style(f"{"i":>2}|{"name":<39}|premiered    | {"progress":<26}| TAGS", fg="green"))
+    click.echo(click.style(f"{"i":>2}|{"name":<39}|premiered    | {"progress [S:EP]":<15}| {"status":<10}| TAGS", fg="green"))
     for i,match in enumerate(matches):
         click.echo(click.style(f"{i:>2} ", fg="green"), nl=False)
         click.echo(click.style(f"{match.name:<40} {match.premiered:<12}| ", fg="blue"), nl=False)
-        click.echo(f"s:{match.num_seasons:>2} ep:{match.num_episodes:>3} - at {str(match.stopped_at):>8} | ", nl=False)
-        click.echo(click.style(f"{match.tags}", fg="yellow"))
+        #[S:0 EP:12] / [1:24]
+        click.echo(f"[{match.num_seasons:>2}:{match.num_episodes:>2}]-[{str(match.stopped_at[0]):>2}:{str(match.stopped_at[1]):>2}]|", nl=False)
+        #status label is retrieved as a string
+        STATUS_STYLE = {
+            Status.CAUGHT_UP: ("CAUGHT UP", "green"),
+            Status.IN_PROGRESS: ("WATCHING", "yellow"),
+        }
+        label, color = STATUS_STYLE.get(match.status, ("NOT STARTED", "red"))
+        label = f"{label:<11}"
+        click.echo(click.style(label, fg=color, bold=True), nl=False)
+        click.echo("|" + click.style(f"{match.tags}", fg="yellow"))
 
     #prompt user for next action
     index = click.prompt("[ENTER/-1 for none] Enter desired index",type=click.IntRange(-1, len(matches) - 1), default=-1)
