@@ -344,6 +344,45 @@ class TestGetWith(unittest.TestCase):
         matches = lib.get_with(key_word="Comedy", tag="drama")
         self.assertEqual(matches, [])
 
+    @patch.object(Api, "get_upcoming")
+    class TestGetUpcoming(unittest.TestCase):
+        def test_get_upcoming_returns_upcoming_episodes(self, mock_get_upcoming):
+            mock_get_upcoming.return_value = ["2024-07-01", "2024-07-15"]
+            lib = Library()
+            lib.series = [
+                Series(make_store(id=1, num_seasons=3, num_episodes=10, tags=[])),
+            ]
+
+            upcoming = lib.get_upcoming(days=30)
+            self.assertEqual(upcoming, [["2024-07-01", "Test Show"], ["2024-07-15", "Test Show"]])
+            mock_get_upcoming.assert_called_once_with(1, 30)
+
+        def test_get_upcoming_with_no_upcoming_episodes_returns_empty(self, mock_get_upcoming):
+            mock_get_upcoming.return_value = []
+            lib = Library()
+            lib.series = [
+                Series(make_store(id=1, num_seasons=3, num_episodes=10, tags=[])),
+            ]
+
+            upcoming = lib.get_upcoming(days=30)
+            self.assertEqual(upcoming, [])
+            mock_get_upcoming.assert_called_once_with(1, 30)
+
+    @patch.object(Api, "get_upcoming")
+    def test_print_upcoming_prints_upcoming_episodes(self, mock_get_upcoming):
+        mock_get_upcoming.return_value = ["2024-07-01", "2024-07-15"]
+        lib = Library()
+        lib.series = [
+            Series(make_store(id=1, num_seasons=3, num_episodes=10, tags=[])),
+        ]
+
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            lib.print_upcoming(days=30)
+        output = buf.getvalue()
+        self.assertIn("2024-07-01 - Test Show", output)
+        self.assertIn("2024-07-15 - Test Show", output)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -474,6 +474,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <ref refid="528fd919-9679-11f1-b6de-1f96e6b09142"/>
 <ref refid="935b42a9-9658-11f1-842a-1f96e6b09142"/>
 <ref refid="8483d9f7-96f5-11f1-9467-bfa2a42fe28b"/>
+<ref refid="dbe07ec3-c4e4-11f1-8cab-d7afcf7ad9db"/>
 </reflist>
 </ownedOperation>
 <presentation>
@@ -493,7 +494,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <val>243.0</val>
 </width>
 <height>
-<val>380.0</val>
+<val>397.0</val>
 </height>
 <diagram>
 <ref refid="466e059e-9658-11f1-bfe8-1f96e6b09142"/>
@@ -661,6 +662,8 @@ existing classes or even new classes with specific responsibilities.</val>
 <ref refid="e1f7fc52-9659-11f1-bf68-1f96e6b09142"/>
 <ref refid="5f99a657-9679-11f1-b68b-1f96e6b09142"/>
 <ref refid="4bb1d9ee-968b-11f1-b618-1f96e6b09142"/>
+<ref refid="e2aa0ad9-c4e4-11f1-9f19-d7afcf7ad9db"/>
+<ref refid="f18a0d5e-c4e4-11f1-87f3-d7afcf7ad9db"/>
 </reflist>
 </ownedOperation>
 <presentation>
@@ -680,7 +683,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <val>242.99999999999997</val>
 </width>
 <height>
-<val>278.0</val>
+<val>312.0</val>
 </height>
 <diagram>
 <ref refid="466e059e-9658-11f1-bfe8-1f96e6b09142"/>
@@ -752,7 +755,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <val>(1.0, 0.0, 0.0, 1.0, 159.02669270833334, 202.72525531328273)</val>
 </matrix>
 <points>
-<val>[(10.157546997070227, -140.80665310773358), (10.157546997070227, -65.96159615394009)]</val>
+<val>[(10.157546997070227, -106.80665310773358), (10.157546997070227, -65.96159615394009)]</val>
 </points>
 <head-connection>
 <ref refid="a9c4400b-9659-11f1-b916-1f96e6b09142"/>
@@ -891,6 +894,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <ref refid="cc75a0e1-96f3-11f1-8593-bfa2a42fe28b"/>
 <ref refid="d1584f7f-96f3-11f1-a72f-bfa2a42fe28b"/>
 <ref refid="d7d7d1b1-96f3-11f1-897d-bfa2a42fe28b"/>
+<ref refid="c7beb4d3-c4e4-11f1-91c3-d7afcf7ad9db"/>
 </reflist>
 </ownedOperation>
 <presentation>
@@ -910,7 +914,7 @@ existing classes or even new classes with specific responsibilities.</val>
 <val>218.0</val>
 </width>
 <height>
-<val>108.0</val>
+<val>125.0</val>
 </height>
 <diagram>
 <ref refid="466e059e-9658-11f1-bfe8-1f96e6b09142"/>
@@ -1138,5 +1142,98 @@ existing classes or even new classes with specific responsibilities.</val>
 <val>[(0.0, 0.0), (105.08547375865814, 0.0)]</val>
 </points>
 </general:Line>
+<UML:Operation id="c7beb4d3-c4e4-11f1-91c3-d7afcf7ad9db">
+<class_>
+<ref refid="c1f245ef-96f3-11f1-9522-bfa2a42fe28b"/>
+</class_>
+<name>
+<val>get_upcoming</val>
+</name>
+<ownedParameter>
+<reflist>
+<ref refid="d07e73f7-c4e4-11f1-9ff8-d7afcf7ad9db"/>
+<ref refid="d080da9d-c4e4-11f1-9392-d7afcf7ad9db"/>
+</reflist>
+</ownedParameter>
+</UML:Operation>
+<UML:Parameter id="d07e73f7-c4e4-11f1-9ff8-d7afcf7ad9db">
+<name>
+<val>id</val>
+</name>
+<ownerFormalParam>
+<ref refid="c7beb4d3-c4e4-11f1-91c3-d7afcf7ad9db"/>
+</ownerFormalParam>
+</UML:Parameter>
+<UML:Parameter id="d080da9d-c4e4-11f1-9392-d7afcf7ad9db">
+<name>
+<val>days</val>
+</name>
+<ownerFormalParam>
+<ref refid="c7beb4d3-c4e4-11f1-91c3-d7afcf7ad9db"/>
+</ownerFormalParam>
+</UML:Parameter>
+<UML:Operation id="dbe07ec3-c4e4-11f1-8cab-d7afcf7ad9db">
+<class_>
+<ref refid="50431047-9658-11f1-82de-1f96e6b09142"/>
+</class_>
+<name>
+<val>get_upcoming</val>
+</name>
+<ownedParameter>
+<reflist>
+<ref refid="dbeaf8f2-c4e4-11f1-9d9a-d7afcf7ad9db"/>
+</reflist>
+</ownedParameter>
+</UML:Operation>
+<UML:Parameter id="dbeaf8f2-c4e4-11f1-9d9a-d7afcf7ad9db">
+<name>
+<val>days</val>
+</name>
+<ownerFormalParam>
+<ref refid="dbe07ec3-c4e4-11f1-8cab-d7afcf7ad9db"/>
+</ownerFormalParam>
+</UML:Parameter>
+<UML:Operation id="e2aa0ad9-c4e4-11f1-9f19-d7afcf7ad9db">
+<class_>
+<ref refid="a9c363ea-9659-11f1-a3fd-1f96e6b09142"/>
+</class_>
+<name>
+<val>get_upcoming</val>
+</name>
+<ownedParameter>
+<reflist>
+<ref refid="e2af3649-c4e4-11f1-a288-d7afcf7ad9db"/>
+</reflist>
+</ownedParameter>
+</UML:Operation>
+<UML:Parameter id="e2af3649-c4e4-11f1-a288-d7afcf7ad9db">
+<name>
+<val>days</val>
+</name>
+<ownerFormalParam>
+<ref refid="e2aa0ad9-c4e4-11f1-9f19-d7afcf7ad9db"/>
+</ownerFormalParam>
+</UML:Parameter>
+<UML:Operation id="f18a0d5e-c4e4-11f1-87f3-d7afcf7ad9db">
+<class_>
+<ref refid="a9c363ea-9659-11f1-a3fd-1f96e6b09142"/>
+</class_>
+<name>
+<val>print_upcoming</val>
+</name>
+<ownedParameter>
+<reflist>
+<ref refid="f18e5115-c4e4-11f1-b6bf-d7afcf7ad9db"/>
+</reflist>
+</ownedParameter>
+</UML:Operation>
+<UML:Parameter id="f18e5115-c4e4-11f1-b6bf-d7afcf7ad9db">
+<name>
+<val>days</val>
+</name>
+<ownerFormalParam>
+<ref refid="f18a0d5e-c4e4-11f1-87f3-d7afcf7ad9db"/>
+</ownerFormalParam>
+</UML:Parameter>
 </model>
 </gaphor>

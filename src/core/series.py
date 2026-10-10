@@ -132,6 +132,9 @@ class Series:
 			self.add_tag("updated")
 
 	def to_dict(self):
+		'''
+		convert the instance into a dictionary
+		'''
 		store = dict()
 		for key in self.keys:
 			if key !=  "status":
@@ -140,3 +143,12 @@ class Series:
 				store[key]=getattr(self, key).value
 
 		return store
+
+	def get_upcoming(self, days=30):
+		'''
+		get the upcoming episodes for the series
+
+		Args:
+			days: number of days to check for upcoming episodes
+		'''
+		return Api.get_upcoming(self.id, days)

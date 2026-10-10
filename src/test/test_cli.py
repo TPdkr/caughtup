@@ -396,6 +396,100 @@ class TestSetProfileCommand(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         mock_set_default.assert_called_once_with("myshow")
 
+# ---------------------------------------------------------------------------
+# @cli.command "upcoming"
+# ---------------------------------------------------------------------------
+class TestUpcomingCommand(unittest.TestCase):
+    """upcoming: prompts for a number of days (IntRange 1-365, default 30)
+    and forwards it to profile.print_upcoming(days).
+ 
+    The first group uses a MagicMock profile to check the prompt/validation
+    behaviour in isolation; the last test uses a real Library + real Series
+    (only Api.get_upcoming is mocked) to check the printed output end to end.
+    """
+ 
+    def setUp(self):
+        self.runner = CliRunner()
+ 
+    def test_blank_input_uses_default_of_30_days(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="\n")
+        self.assertEqual(result.exit_code, 0)
+        profile.print_upcoming.assert_called_once_with(30)
+ 
+    def test_custom_number_of_days_is_forwarded(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="7\n")
+        self.assertEqual(result.exit_code, 0)
+        profile.print_upcoming.assert_called_once_with(7)
+ 
+    def test_lower_bound_of_range_is_accepted(self):
+        profile = MagicMock()
+        self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="1\n")
+        profile.print_upcoming.assert_called_once_with(1)
+ 
+    def test_upper_bound_of_range_is_accepted(self):
+        profile = MagicMock()
+        self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="365\n")
+        profile.print_upcoming.assert_called_once_with(365)
+ 
+    def test_below_range_reprompts_until_valid(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="0\n5\n")
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("not in the range", result.output)
+        profile.print_upcoming.assert_called_once_with(5)  # 0 was never forwarded
+ 
+    def test_above_range_reprompts_until_valid(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="366\n10\n")
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("not in the range", result.output)
+        profile.print_upcoming.assert_called_once_with(10)
+ 
+    def test_non_integer_reprompts_until_valid(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="abc\n14\n")
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("not a valid integer", result.output)
+        profile.print_upcoming.assert_called_once_with(14)
+ 
+    def test_prompt_text_is_shown(self):
+        profile = MagicMock()
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=profile, input="\n")
+        self.assertIn("Enter number of days to check for upcoming episodes", result.output)
+ 
+    @patch.object(Api, "get_upcoming")
+    def test_end_to_end_prints_upcoming_sorted_by_date(self, mock_get_upcoming):
+        show_a = Series(make_store(id=1, name="Show A"))
+        show_b = Series(make_store(id=2, name="Show B"))
+        lib = Library()
+        lib.series = [show_a, show_b]
+        dates_by_id = {1: ["2026-10-20"], 2: ["2026-10-12", "2026-10-25"]}
+        mock_get_upcoming.side_effect = lambda serie_id, days: dates_by_id[serie_id]
+ 
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=lib, input="14\n")
+ 
+        self.assertEqual(result.exit_code, 0)
+        # the entered number of days reaches the API for every series
+        mock_get_upcoming.assert_any_call(1, 14)
+        mock_get_upcoming.assert_any_call(2, 14)
+        lines = [l for l in result.output.splitlines() if " - Show " in l]
+        self.assertEqual(lines, [
+            "2026-10-12 - Show B",
+            "2026-10-20 - Show A",
+            "2026-10-25 - Show B",
+        ])
+ 
+    @patch.object(Api, "get_upcoming")
+    def test_end_to_end_with_nothing_upcoming_prints_no_entries(self, mock_get_upcoming):
+        lib = Library()
+        lib.series = [Series(make_store(id=1, name="Show A"))]
+        mock_get_upcoming.return_value = []
+        result = self.runner.invoke(cli_module.cli, ["upcoming"], obj=lib, input="\n")
+        self.assertEqual(result.exit_code, 0)
+        self.assertNotIn(" - Show A", result.output)
+
 
 # ---------------------------------------------------------------------------
 # @cli.command "set-path"

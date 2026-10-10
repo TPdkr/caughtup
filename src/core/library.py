@@ -140,3 +140,30 @@ class Library:
 				matches.append(serie)
 
 		return matches
+
+	def get_upcoming(self, days=30):
+		'''
+		get the upcoming episodes for all series
+
+		Args:
+			days: number of days to check for upcoming episodes
+		'''
+		upcoming = []
+		for serie in self.series:
+			
+			dates = serie.get_upcoming(days)
+			names = [serie.name]*len(dates)
+			upcoming.extend(list(zip(dates, names)))
+		return upcoming
+
+	def print_upcoming(self, days=30):
+		'''
+		print the upcoming episodes for all series
+
+		Args:
+			days: number of days to check for upcoming episodes
+		'''
+		upcoming = self.get_upcoming(days)
+		upcoming.sort(key=lambda x: x[0])
+		for date, name in upcoming:
+			print(f"{date} - {name}")

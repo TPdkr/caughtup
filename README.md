@@ -1,8 +1,10 @@
 # CAUGHT UP
 
-Get a nice CLI to get info on series you like and get info when they get updated with new seasons info and such!
+Get a nice CLI to get info on series you like and get info when they get updated with new seasons info and such! Organize your watch list by tags, see what is coming up this month and use the freedom this app provides to build your own additions!
 
 App is designed to be simple, yet practical. If you have any ideas please share them with me directly!
+
+Store all your data locally! No need for user accounts or giving your data to shady people as well!
 
 ## Set up
 

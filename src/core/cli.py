@@ -94,7 +94,7 @@ Here all key commands can be entered by the user.
 """
 def user_loop(profile):
     ACTIONS = ["list", "add", "update-all", "clear-updated", "get-tags",
-               "caught-up-all", "reset-all", "set-profile", "set-path", "exit"]
+               "caught-up-all", "reset-all", "set-profile", "set-path","upcoming", "exit"]
     
     while True:
         choice = click.prompt("\nACTION", type=click.Choice(ACTIONS, case_sensitive=False))
@@ -158,6 +158,13 @@ def list_series(profile):
     if index==-1:
             return
     series_menu(profile, matches[index])
+
+
+@cli.command("upcoming")
+@click.pass_obj
+def list_upcoming(profile):
+    days = click.prompt("Enter number of days to check for upcoming episodes", type=click.IntRange(1, 365), default=30)
+    profile.print_upcoming(days)
 
 @cli.command("add")
 @click.pass_obj

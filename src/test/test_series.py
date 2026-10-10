@@ -306,6 +306,24 @@ class TestToDict(unittest.TestCase):
         # rather than deserialized back into an Enum member.
         self.assertEqual(s2.status, s.status)
 
+    @patch.object(Api, "get_upcoming")
+    class TestGetUpcoming(unittest.TestCase):
+        """get_upcoming(): covers both the 'no upcoming' and 'some upcoming'
+        branches, and that the days argument is passed through to Api.get_upcoming."""
+
+        def test_no_upcoming_returns_empty_list(self, mock_get_upcoming):
+            s = Series(make_store())
+            mock_get_upcoming.return_value = []
+            result = s.get_upcoming(days=15)
+            self.assertEqual(result, [])
+            mock_get_upcoming.assert_called_once_with(s.id, 15)
+
+        def test_some_upcoming_returns_list(self, mock_get_upcoming):
+            s = Series(make_store())
+            mock_get_upcoming.return_value = ["2024-07-01", "2024-07-08"]
+            result = s.get_upcoming(days=30)
+            self.assertEqual(result, ["2024-07-01", "2024-07-08"])
+            mock_get_upcoming.assert_called_once_with(s.id, 30)
 
 if __name__ == "__main__":
     unittest.main()

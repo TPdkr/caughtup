@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import requests
 
 class Api:
@@ -59,6 +61,23 @@ class Api:
 			#data needs to be formatted in a consistent way
 			store = Api.format(data, seasons_data)
 			return store
+		else:
+			print(f"Bad requests 404 for show {id} :3")
+			return None
+
+	@staticmethod
+	def get_upcoming(id, days =30):
+		url = f"https://api.tvmaze.com/shows/{id}/episodes"
+		response = requests.get(url)
+		if response.status_code == 200:
+			data = response.json()
+			today = date.today()
+			end = today + timedelta(days=days)
+			upcoming = []
+			for ep in data:
+				if ep["airdate"] and today <= date.fromisoformat(ep["airdate"]) <= end:
+					upcoming.append(ep["airdate"])
+			return upcoming
 		else:
 			print(f"Bad requests 404 for show {id} :3")
 			return None
