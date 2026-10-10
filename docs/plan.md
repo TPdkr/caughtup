@@ -64,6 +64,7 @@ These are the commands available to the user on the main screen after setting a 
 | reset-all| reset watch progress in each series to the very start|
 | set-profile| set the current profile as default|
 | set-path| set a new path for current profile|
+| upcoming| get a list of dates of upcoming episodes|
 
 If a ***list*** command is chosen the user can choose:
 - tag to search for
