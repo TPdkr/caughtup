@@ -150,7 +150,8 @@ class Library:
 		'''
 		upcoming = []
 		for serie in self.series:
-			
+			if serie.ended != "" and serie.ended is not None:
+				continue
 			dates = serie.get_upcoming(days)
 			names = [serie.name]*len(dates)
 			upcoming.extend(list(zip(dates, names)))
